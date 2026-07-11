@@ -75,7 +75,7 @@ Navigate to the `backend/` directory and configure the environment variables:
    SMTP_SECURE=false
    SMTP_USER=your_email@gmail.com
    SMTP_PASS=your_gmail_app_password
-   RECEIVER_EMAIL=hariomgupta0303@gmail.com
+   RECEIVER_EMAIL=example@gmail.com
    ```
 
 ### 3. Install All Dependencies
@@ -103,12 +103,3 @@ npm run dev
 - **Backend API** runs on: `http://localhost:5000`
 
 ---
-
-## Admin Portal Access
-
-To access the portfolio CMS panel and manage your content:
-1. Navigate to `/login` on your portfolio site.
-2. Enter the credentials seeded during database initialization:
-   - **Email**: `hariomgupta0303@gmail.com`
-   - **Password**: `Hariom@2027`
-3. Upon successful login, you'll be redirected to the `/admin` CMS dashboard. Here you can edit profile records, perform CRUD operations on projects/skills/certificates, and view or delete message submissions from the contact form.
