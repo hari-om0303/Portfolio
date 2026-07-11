@@ -1,0 +1,16 @@
+{
+  "name": "hari-om-portfolio-root",
+  "version": "1.0.0",
+  "description": "Root management for MERN stack portfolio",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "seed": "cd backend && node scripts/seed.js",
+    "server": "cd backend && npm start",
+    "client": "cd frontend && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
