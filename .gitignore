@@ -44,3 +44,11 @@ yarn-error.log*
 lerna-debug.log*
 logs/
 *.log
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
