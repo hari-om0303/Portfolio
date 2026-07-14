@@ -129,7 +129,7 @@ const Projects = () => {
     const fetchProjects = async () => {
       try {
         const response = await api.get('/projects');
-        if (response.data && response.data.length > 0) {
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
           setProjects(response.data);
         } else {
           setProjects(defaultProjects);

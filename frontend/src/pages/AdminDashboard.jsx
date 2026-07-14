@@ -104,10 +104,10 @@ const AdminDashboard = () => {
       ]);
 
       if (profRes && profRes.data) setProfile(profRes.data);
-      if (projRes && projRes.data) setProjects(projRes.data);
-      if (skillRes && skillRes.data) setSkills(skillRes.data);
-      if (msgRes && msgRes.data) setMessages(msgRes.data);
-      if (certRes && certRes.data) setCertificates(certRes.data);
+      if (projRes && Array.isArray(projRes.data)) setProjects(projRes.data);
+      if (skillRes && Array.isArray(skillRes.data)) setSkills(skillRes.data);
+      if (msgRes && Array.isArray(msgRes.data)) setMessages(msgRes.data);
+      if (certRes && Array.isArray(certRes.data)) setCertificates(certRes.data);
     } catch (err) {
       console.error('Error fetching CMS collections:', err);
       toast.error('Failed to load portfolio CMS data.');

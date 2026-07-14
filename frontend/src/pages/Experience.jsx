@@ -114,7 +114,7 @@ const Experience = () => {
     const fetchExperiences = async () => {
       try {
         const response = await api.get('/experience');
-        if (response.data && response.data.length > 0) {
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
           setExperiences(response.data);
         } else {
           setExperiences(defaultExperiences);

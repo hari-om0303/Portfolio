@@ -97,7 +97,7 @@ const Skills = () => {
     const fetchSkills = async () => {
       try {
         const response = await api.get('/skills');
-        if (response.data && response.data.length > 0) {
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
           setSkills(response.data);
         } else {
           setSkills(defaultSkills);

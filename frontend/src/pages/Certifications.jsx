@@ -141,7 +141,7 @@ const Certifications = () => {
     const fetchCertificates = async () => {
       try {
         const response = await api.get('/certificates');
-        if (response.data && response.data.length > 0) {
+        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
           setCertificates(response.data);
         } else {
           setCertificates(defaultCertificates);
