@@ -21,15 +21,16 @@ const allowedOrigins = [
   'http://localhost:5173', // Local Vite development
   'http://127.0.0.1:5173',
   process.env.FRONTEND_URL, // Production URL (if deployed)
-].filter(Boolean);
+].filter(Boolean).map(url => url.replace(/\/$/, ''));
 
 app.use(
   cors({
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      const cleanOrigin = origin.replace(/\/$/, '');
+      if (allowedOrigins.indexOf(cleanOrigin) === -1) {
+        const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
         return callback(new Error(msg), false);
       }
       return callback(null, true);
