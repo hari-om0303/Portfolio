@@ -2,6 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { api } from '../context/AuthContext';
 
+const getSkillCategoryColors = (category) => {
+  const cat = (category || '').toLowerCase();
+  if (cat.includes('networking') || cat.includes('network')) {
+    return {
+      text: 'text-cyan-500 dark:text-cyan-400',
+      border: 'hover:border-cyan-500/30 dark:hover:border-cyan-500/30',
+      hoverBadge: 'hover:text-cyan-500 hover:border-cyan-500/30 dark:hover:text-cyan-400 dark:hover:border-cyan-500/20',
+      badgeBorder: 'border-b-cyan-500/20 dark:border-b-cyan-500/10'
+    };
+  }
+  if (cat.includes('programming') || cat.includes('language') || cat.includes('ai') || cat.includes('science') || cat.includes('ml')) {
+    return {
+      text: 'text-purple-500 dark:text-purple-400',
+      border: 'hover:border-purple-500/30 dark:hover:border-purple-500/30',
+      hoverBadge: 'hover:text-purple-500 hover:border-purple-500/30 dark:hover:text-purple-400 dark:hover:border-purple-500/20',
+      badgeBorder: 'border-b-purple-500/20 dark:border-b-purple-500/10'
+    };
+  }
+  if (cat.includes('backend') || cat.includes('database')) {
+    return {
+      text: 'text-emerald-500 dark:text-emerald-400',
+      border: 'hover:border-emerald-500/30 dark:hover:border-emerald-500/30',
+      hoverBadge: 'hover:text-emerald-500 hover:border-emerald-500/30 dark:hover:text-emerald-400 dark:hover:border-emerald-500/20',
+      badgeBorder: 'border-b-emerald-500/20 dark:border-b-emerald-500/10'
+    };
+  }
+  if (cat.includes('fundamental') || cat.includes('cs fundamentals')) {
+    return {
+      text: 'text-amber-500 dark:text-amber-400',
+      border: 'hover:border-amber-500/30 dark:hover:border-amber-500/30',
+      hoverBadge: 'hover:text-amber-500 hover:border-amber-500/30 dark:hover:text-amber-400 dark:hover:border-amber-500/20',
+      badgeBorder: 'border-b-amber-500/20 dark:border-b-amber-500/10'
+    };
+  }
+  // Default Blue
+  return {
+    text: 'text-blue-500 dark:text-blue-400',
+    border: 'hover:border-blue-500/30 dark:hover:border-blue-500/30',
+    hoverBadge: 'hover:text-blue-500 hover:border-blue-500/30 dark:hover:text-blue-400 dark:hover:border-blue-500/20',
+    badgeBorder: 'border-b-blue-500/20 dark:border-b-blue-500/10'
+  };
+};
+
 const Skills = () => {
   const [skills, setSkills] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,6 +83,14 @@ const Skills = () => {
     { name: 'Docker', category: 'Developer Tools', level: 'Intermediate', rating: 4, yearsOfExperience: '1 year' },
     { name: 'Postman / API Testing', category: 'Developer Tools', level: 'Advanced', rating: 5, yearsOfExperience: '2 years' },
     { name: 'VS Code & IntelliJ', category: 'Developer Tools', level: 'Advanced', rating: 5, yearsOfExperience: '3 years' },
+    // CS Fundamentals
+    { name: "Object Oriented Programming (OOPs)", category: 'CS Fundamentals', level: 'Advanced', rating: 5, yearsOfExperience: '3 years' },
+    { name: 'Computer Networks (CN)', category: 'CS Fundamentals', level: 'Advanced', rating: 5, yearsOfExperience: '3 years' },
+    { name: 'Database Management Systems (DBMS)', category: 'CS Fundamentals', level: 'Advanced', rating: 5, yearsOfExperience: '3 years' },
+    // AI/ML & Data Science
+    { name: 'Artificial Intelligence (AI)', category: 'AI/ML & Data Science', level: 'Intermediate', rating: 4, yearsOfExperience: '1 year' },
+    { name: 'Data Science', category: 'AI/ML & Data Science', level: 'Intermediate', rating: 4, yearsOfExperience: '1.5 years' },
+    { name: 'Data Handling', category: 'AI/ML & Data Science', level: 'Advanced', rating: 5, yearsOfExperience: '2 years' },
   ];
 
   useEffect(() => {
@@ -70,6 +121,8 @@ const Skills = () => {
     'Networking',
     'Cloud',
     'Developer Tools',
+    'CS Fundamentals',
+    'AI/ML & Data Science',
   ];
 
   return (
@@ -89,23 +142,25 @@ const Skills = () => {
           <div className="w-16 h-1 bg-gradient-to-r from-accent-primary to-accent-secondary mt-3 rounded-full" />
         </div>
 
+
         {/* Skill categories grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {categories.map((cat, catIdx) => {
             const catSkills = skills.filter((s) => s.category === cat);
             if (catSkills.length === 0) return null;
+            const colors = getSkillCategoryColors(cat);
 
             return (
               <motion.div
                 key={cat}
-                className="p-6 md:p-8 rounded-3xl bg-white dark:bg-zinc-900/30 border border-slate-100 dark:border-zinc-900 shadow-xl flex flex-col h-full"
+                className={`p-6 md:p-8 rounded-3xl bg-white dark:bg-zinc-900/30 border border-slate-100 dark:border-zinc-900 shadow-xl flex flex-col h-full transition-all duration-300 ${colors.border}`}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: catIdx * 0.05 }}
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
               >
-                <h3 className="text-base md:text-lg font-bold tracking-tight text-slate-800 dark:text-white border-b border-slate-100 dark:border-zinc-800 pb-4 mb-5 uppercase font-mono">
+                <h3 className={`text-base md:text-lg font-bold tracking-tight border-b pb-4 mb-5 uppercase font-mono transition-colors duration-300 ${colors.text} ${colors.badgeBorder}`}>
                   {cat}
                 </h3>
                 
@@ -114,7 +169,7 @@ const Skills = () => {
                   {catSkills.map((skill) => (
                     <span
                       key={skill._id || skill.name}
-                      className="px-3.5 py-2 rounded-2xl bg-slate-50 dark:bg-zinc-900/40 border border-slate-100 dark:border-zinc-900 text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-accent-primary hover:border-accent-primary/30 transition-all duration-300"
+                      className={`px-3.5 py-2 rounded-2xl bg-slate-50 dark:bg-zinc-900/40 border border-slate-100 dark:border-zinc-900 text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 transition-all duration-300 ${colors.hoverBadge}`}
                     >
                       {skill.name}
                     </span>

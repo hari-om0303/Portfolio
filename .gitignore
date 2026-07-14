@@ -5,6 +5,8 @@ web_modules/
 backend/node_modules/
 frontend/node_modules/
 
+login.md
+
 # Local env files
 .env
 backend/.env

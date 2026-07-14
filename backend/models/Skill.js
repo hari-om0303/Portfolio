@@ -18,6 +18,8 @@ const skillSchema = new mongoose.Schema(
         'Networking',
         'Cloud',
         'Developer Tools',
+        'CS Fundamentals',
+        'AI/ML & Data Science',
       ],
     },
     level: {

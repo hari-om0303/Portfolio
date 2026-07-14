@@ -23,6 +23,14 @@ const certificateSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    fileUrl: {
+      type: String,
+      default: '',
+    },
+    category: {
+      type: String,
+      default: 'Other',
+    },
   },
   { timestamps: true }
 );

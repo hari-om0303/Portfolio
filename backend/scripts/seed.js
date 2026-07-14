@@ -187,6 +187,14 @@ const seedData = async () => {
       { name: 'Docker', category: 'Developer Tools', level: 'Intermediate', rating: 4, yearsOfExperience: '1 year' },
       { name: 'Postman / API Testing', category: 'Developer Tools', level: 'Advanced', rating: 5, yearsOfExperience: '2 years' },
       { name: 'VS Code & IntelliJ IDEA', category: 'Developer Tools', level: 'Advanced', rating: 5, yearsOfExperience: '3 years' },
+      // CS Fundamentals
+      { name: "Object Oriented Programming (OOPs)", category: 'CS Fundamentals', level: 'Advanced', rating: 5, yearsOfExperience: '3 years' },
+      { name: 'Computer Networks (CN)', category: 'CS Fundamentals', level: 'Advanced', rating: 5, yearsOfExperience: '3 years' },
+      { name: 'Database Management Systems (DBMS)', category: 'CS Fundamentals', level: 'Advanced', rating: 5, yearsOfExperience: '3 years' },
+      // AI/ML & Data Science
+      { name: 'Artificial Intelligence (AI)', category: 'AI/ML & Data Science', level: 'Intermediate', rating: 4, yearsOfExperience: '1 year' },
+      { name: 'Data Science', category: 'AI/ML & Data Science', level: 'Intermediate', rating: 4, yearsOfExperience: '1.5 years' },
+      { name: 'Data Handling', category: 'AI/ML & Data Science', level: 'Advanced', rating: 5, yearsOfExperience: '2 years' },
     ];
     await Skill.insertMany(skills);
     console.log('Skills seeded.');
@@ -199,6 +207,7 @@ const seedData = async () => {
         skillsLearned: ['Computer Networks', 'TCP/IP Networking', 'IPv4 Addressing', 'Subnetting', 'Network Fundamentals', 'Cisco Packet Tracer'],
         issueDate: 'Dec 2025',
         credentialUrl: '',
+        category: 'Networking',
       },
       {
         name: 'CCNA: Switching, Routing, and Wireless Essentials',
@@ -206,6 +215,7 @@ const seedData = async () => {
         skillsLearned: ['Routing and Switching', 'VLANs', 'Inter VLAN Routing', 'Wireless Networking'],
         issueDate: 'Jan 2026',
         credentialUrl: '',
+        category: 'Networking',
       },
       {
         name: 'CCNA: Enterprise Networking, Security, and Automation',
@@ -213,6 +223,7 @@ const seedData = async () => {
         skillsLearned: ['Network Security', 'ACLs', 'NAT', 'OSPF Routing'],
         issueDate: 'Feb 2026',
         credentialUrl: '',
+        category: 'Networking',
       },
       {
         name: 'Oracle Cloud Infrastructure 2025 Certified Data Science',
@@ -220,6 +231,7 @@ const seedData = async () => {
         skillsLearned: ['Data Science', 'Machine Learning', 'Python', 'Predictive Modeling'],
         issueDate: 'Oct 2025',
         credentialUrl: '',
+        category: 'AI & Data Science',
       },
       {
         name: 'Python for Data Science',
@@ -227,6 +239,7 @@ const seedData = async () => {
         skillsLearned: ['Python Programming', 'NumPy', 'Pandas', 'Data Visualization', 'Data Science Foundations'],
         issueDate: 'Jul 2024',
         credentialUrl: '',
+        category: 'AI & Data Science',
       },
       {
         name: 'Advanced Data Structures and Algorithms',
@@ -234,6 +247,7 @@ const seedData = async () => {
         skillsLearned: ['Data Structures', 'Algorithms', 'Java Programming', 'Problem Solving', 'Time Complexity Analysis'],
         issueDate: 'Aug 2025',
         credentialUrl: '',
+        category: 'Backend & Full Stack',
       },
       {
         name: 'Full Stack Development',
@@ -241,6 +255,7 @@ const seedData = async () => {
         skillsLearned: ['HTML', 'CSS', 'JavaScript', 'Node.js', 'Express.js', 'MongoDB', 'React.js', 'Web Development', 'REST APIs', 'API Testing'],
         issueDate: 'Sep 2025',
         credentialUrl: '',
+        category: 'Backend & Full Stack',
       },
     ];
     await Certificate.insertMany(certificates);

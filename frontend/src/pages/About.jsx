@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaGraduationCap, FaAward, FaHeart } from 'react-icons/fa';
+import { FaGraduationCap, FaAward } from 'react-icons/fa';
 
 const About = () => {
   const education = [
@@ -28,17 +28,10 @@ const About = () => {
   ];
 
   const awards = [
-    'NPTEL Elite Certification in Python for Data Science by IIT Madras.',
-    'Top 3 Finalist — HackSprint Hackathon, Google Developer Groups (GDG), Medicaps University.',
-  ];
-
-  const hobbies = [
-    'Listening to Music',
-    'Cooking',
-    'Playing Cricket and Badminton',
-    'Fitness and Gym Training',
-    'Trekking & Exploring Nature',
-    'Exploring New Technology',
+    'NPTEL Elite Certification in Python for Data Science (IIT Madras).',
+    'Solved 150+ Data Structures & Algorithms problems on LeetCode (Java).',
+    'Earned LeetCode 50 Days & 100 Days coding challenge badges.',
+    'Oracle Cloud Infrastructure 2025 Certified Data Science Professional.',
   ];
 
   return (
@@ -61,11 +54,11 @@ const About = () => {
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
-          {/* Left Column - Summary & Hobbies */}
+          {/* Left Column - Summary */}
           <div className="lg:col-span-5 flex flex-col space-y-8">
             {/* Biography */}
             <motion.div
-              className="p-8 rounded-3xl glass-card dark:bg-zinc-900/40 border border-slate-100 dark:border-zinc-900/60 shadow-xl"
+              className="p-8 rounded-3xl glass-card dark:bg-zinc-900/40 border border-slate-100 dark:border-zinc-900/60 shadow-xl h-full flex flex-col justify-center"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -80,28 +73,6 @@ const About = () => {
               <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-light mt-4">
                 I enjoy cracking complex algorithmic problems on competitive programming platforms and applying data-structures concepts practically. My background blends modern web app development (MERN stack, Docker) with hands-on networking training (VLANs, CCNA, Scapy packets scripting).
               </p>
-            </motion.div>
-
-            {/* Hobbies Card */}
-            <motion.div
-              className="p-8 rounded-3xl glass-card dark:bg-zinc-900/40 border border-slate-100 dark:border-zinc-900/60 shadow-xl"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              <h3 className="text-lg font-bold flex items-center space-x-2 text-slate-800 dark:text-white mb-4">
-                <FaHeart className="text-red-500 w-4 h-4" />
-                <span>Interests & Hobbies</span>
-              </h3>
-              <div className="grid grid-cols-2 gap-3 text-xs md:text-sm font-medium">
-                {hobbies.map((hobby, idx) => (
-                  <div key={idx} className="flex items-center space-x-2 text-slate-600 dark:text-slate-300">
-                    <span className="w-1.5 h-1.5 rounded-full bg-accent-secondary" />
-                    <span>{hobby}</span>
-                  </div>
-                ))}
-              </div>
             </motion.div>
           </div>
 
@@ -144,20 +115,20 @@ const About = () => {
 
             {/* Awards & Achievements Card */}
             <motion.div
-              className="p-8 rounded-3xl glass-card dark:bg-zinc-900/40 border border-slate-100 dark:border-zinc-900/60 shadow-xl"
+              className="p-8 rounded-3xl glass-card dark:bg-zinc-900/40 border border-slate-100 dark:border-zinc-900/60 shadow-xl hover:border-amber-500/30 transition-colors duration-300"
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
               <h3 className="text-lg font-bold flex items-center space-x-2 text-slate-800 dark:text-white mb-4">
-                <FaAward className="text-accent-emerald w-5 h-5" />
+                <FaAward className="text-amber-500 dark:text-amber-400 w-5 h-5" />
                 <span>Awards & Achievements</span>
               </h3>
               <div className="space-y-3">
                 {awards.map((award, idx) => (
                   <div key={idx} className="flex items-start space-x-3 text-xs md:text-sm font-medium">
-                    <span className="text-accent-emerald mt-0.5">🏆</span>
+                    <span className="text-amber-500 dark:text-amber-400 mt-0.5">🏆</span>
                     <span className="text-slate-600 dark:text-slate-300">{award}</span>
                   </div>
                 ))}

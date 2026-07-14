@@ -12,6 +12,7 @@ import {
   FiEdit,
   FiTrash2,
   FiSave,
+  FiAward,
 } from 'react-icons/fi';
 
 const AdminDashboard = () => {
@@ -42,9 +43,20 @@ const AdminDashboard = () => {
   const [projects, setProjects] = useState([]);
   const [skills, setSkills] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [certificates, setCertificates] = useState([]);
 
   // Modal / Form Management States
   const [editingProject, setEditingProject] = useState(null);
+  const [editingCertificate, setEditingCertificate] = useState(null);
+  const [certificateForm, setCertificateForm] = useState({
+    name: '',
+    provider: '',
+    skillsLearned: '',
+    issueDate: '',
+    category: 'Networking',
+    credentialUrl: '',
+    fileUrl: '',
+  });
   const [projectForm, setProjectForm] = useState({
     title: '',
     description: '',
@@ -83,17 +95,19 @@ const AdminDashboard = () => {
   const fetchCMSData = async () => {
     setLoading(true);
     try {
-      const [profRes, projRes, skillRes, msgRes] = await Promise.all([
+      const [profRes, projRes, skillRes, msgRes, certRes] = await Promise.all([
         api.get('/profile').catch(() => null),
         api.get('/projects').catch(() => null),
         api.get('/skills').catch(() => null),
         api.get('/contact').catch(() => null), // Protected route
+        api.get('/certificates').catch(() => null),
       ]);
 
       if (profRes && profRes.data) setProfile(profRes.data);
       if (projRes && projRes.data) setProjects(projRes.data);
       if (skillRes && skillRes.data) setSkills(skillRes.data);
       if (msgRes && msgRes.data) setMessages(msgRes.data);
+      if (certRes && certRes.data) setCertificates(certRes.data);
     } catch (err) {
       console.error('Error fetching CMS collections:', err);
       toast.error('Failed to load portfolio CMS data.');
@@ -283,6 +297,95 @@ const AdminDashboard = () => {
     }
   };
 
+  // --- Certificate Operations ---
+  const openCertificateModal = (cert = null) => {
+    if (cert) {
+      setEditingCertificate(cert);
+      setCertificateForm({
+        name: cert.name,
+        provider: cert.provider,
+        skillsLearned: cert.skillsLearned.join(', '),
+        issueDate: cert.issueDate || '',
+        category: cert.category || 'Networking',
+        credentialUrl: cert.credentialUrl || '',
+        fileUrl: cert.fileUrl || '',
+      });
+    } else {
+      setEditingCertificate(null);
+      setCertificateForm({
+        name: '',
+        provider: '',
+        skillsLearned: '',
+        issueDate: '',
+        category: 'Networking',
+        credentialUrl: '',
+        fileUrl: '',
+      });
+    }
+    setActiveTab('certificateForm');
+  };
+
+  const handleCertificateFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('File size should be less than 5MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCertificateForm((prev) => ({ ...prev, fileUrl: reader.result }));
+        toast.success('File loaded successfully.');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCertificateSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formattedData = {
+      ...certificateForm,
+      skillsLearned: certificateForm.skillsLearned.split(',').map((s) => s.trim()).filter(Boolean),
+    };
+
+    try {
+      if (editingCertificate) {
+        // Update
+        const response = await api.put(`/certificates/${editingCertificate._id}`, formattedData);
+        setCertificates((prev) => prev.map((c) => (c._id === editingCertificate._id ? response.data : c)));
+        toast.success('Certificate updated successfully!');
+      } else {
+        // Create
+        const response = await api.post('/certificates', formattedData);
+        setCertificates((prev) => [response.data, ...prev]);
+        toast.success('Certificate added successfully!');
+      }
+      setActiveTab('certificates');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to save certificate.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteCertificate = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this certificate?')) return;
+    setLoading(true);
+    try {
+      await api.delete(`/certificates/${id}`);
+      setCertificates((prev) => prev.filter((c) => c._id !== id));
+      toast.success('Certificate deleted successfully.');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to delete certificate.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // --- Message Operations ---
   const deleteMessage = async (id) => {
     if (!window.confirm('Delete this message?')) return;
@@ -348,6 +451,17 @@ const AdminDashboard = () => {
           >
             <FiCheckCircle className="w-4.5 h-4.5" />
             <span>Manage Skills</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('certificates')}
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === 'certificates' || activeTab === 'certificateForm'
+                ? 'bg-accent-primary text-white'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900'
+            }`}
+          >
+            <FiAward className="w-4.5 h-4.5" />
+            <span>Manage Certs</span>
           </button>
           <button
             onClick={() => setActiveTab('messages')}
@@ -739,6 +853,8 @@ const AdminDashboard = () => {
                     <option value="Networking">Networking</option>
                     <option value="Cloud">Cloud</option>
                     <option value="Developer Tools">Developer Tools</option>
+                    <option value="CS Fundamentals">CS Fundamentals</option>
+                    <option value="AI/ML & Data Science">AI/ML & Data Science</option>
                   </select>
                 </div>
               </div>
@@ -754,6 +870,169 @@ const AdminDashboard = () => {
                 <button
                   type="button"
                   onClick={() => setActiveTab('skills')}
+                  className="px-6 py-3 rounded-xl text-sm font-bold border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-zinc-900"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* TAB 3.5: CERTIFICATIONS MANAGEMENT */}
+          {activeTab === 'certificates' && (
+            <div className="space-y-6">
+              <div className="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-zinc-800">
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Manage Certifications</h3>
+                <button
+                  onClick={() => openCertificateModal()}
+                  className="flex items-center space-x-1 px-4 py-2 rounded-xl text-xs font-bold text-white bg-accent-primary"
+                >
+                  <FiPlus className="w-3.5 h-3.5" />
+                  <span>Add Certificate</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {certificates.map((cert) => (
+                  <div
+                    key={cert._id}
+                    className="flex justify-between items-center p-4 rounded-2xl border border-slate-200/60 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50"
+                  >
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-800 dark:text-white">{cert.name}</h4>
+                      <p className="text-[10px] text-slate-400 font-mono">
+                        {cert.provider} • <span className="text-accent-primary">{cert.category}</span>
+                      </p>
+                    </div>
+                    <div className="flex space-x-1.5">
+                      <button
+                        onClick={() => openCertificateModal(cert)}
+                        className="p-2 rounded-lg bg-accent-primary/10 text-accent-primary hover:bg-accent-primary hover:text-white transition-colors"
+                      >
+                        <FiEdit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => deleteCertificate(cert._id)}
+                        className="p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                      >
+                        <FiTrash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3.5b: CERTIFICATIONS FORM */}
+          {activeTab === 'certificateForm' && (
+            <form onSubmit={handleCertificateSubmit} className="space-y-6">
+              <h3 className="text-xl font-bold text-slate-800 dark:text-white pb-3 border-b border-slate-100 dark:border-zinc-800">
+                {editingCertificate ? 'Edit Certificate' : 'Add Certificate'}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex flex-col space-y-1.5 md:col-span-2">
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Certificate Name</label>
+                  <input
+                    type="text"
+                    value={certificateForm.name}
+                    onChange={(e) => setCertificateForm({ ...certificateForm, name: e.target.value })}
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent-primary"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Provider</label>
+                  <input
+                    type="text"
+                    value={certificateForm.provider}
+                    onChange={(e) => setCertificateForm({ ...certificateForm, provider: e.target.value })}
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent-primary"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Category</label>
+                  <select
+                    value={certificateForm.category}
+                    onChange={(e) => setCertificateForm({ ...certificateForm, category: e.target.value })}
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent-primary"
+                  >
+                    <option value="Networking">Networking</option>
+                    <option value="AI & Data Science">AI & Data Science</option>
+                    <option value="Backend & Full Stack">Backend & Full Stack</option>
+                    <option value="Achievements / Awards">Achievements / Awards</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Issue Date</label>
+                  <input
+                    type="text"
+                    value={certificateForm.issueDate}
+                    placeholder="e.g. Sep 2025"
+                    onChange={(e) => setCertificateForm({ ...certificateForm, issueDate: e.target.value })}
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent-primary"
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Credential Verification Link</label>
+                  <input
+                    type="text"
+                    value={certificateForm.credentialUrl}
+                    placeholder="https://credly.com/..."
+                    onChange={(e) => setCertificateForm({ ...certificateForm, credentialUrl: e.target.value })}
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent-primary"
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5 md:col-span-2">
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Skills Learned (comma separated)</label>
+                  <input
+                    type="text"
+                    value={certificateForm.skillsLearned}
+                    placeholder="React, Node.js, Express"
+                    onChange={(e) => setCertificateForm({ ...certificateForm, skillsLearned: e.target.value })}
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent-primary"
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5 md:col-span-2">
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Certificate File Link / URL</label>
+                  <input
+                    type="text"
+                    value={certificateForm.fileUrl.startsWith('data:') ? '' : certificateForm.fileUrl}
+                    placeholder="https://example.com/cert.pdf or leave empty if uploading file below"
+                    onChange={(e) => setCertificateForm({ ...certificateForm, fileUrl: e.target.value })}
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/50 text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:border-accent-primary"
+                  />
+                </div>
+                <div className="flex flex-col space-y-2 md:col-span-2 pb-6 border-b border-slate-100 dark:border-zinc-800">
+                  <label className="text-xs font-bold text-slate-600 dark:text-slate-300">OR Upload Certificate Document (Image/PDF)</label>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={handleCertificateFileChange}
+                    className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-accent-primary/10 file:text-accent-primary hover:file:bg-accent-primary/20 cursor-pointer"
+                  />
+                  {certificateForm.fileUrl && (
+                    <div className="text-[10px] text-accent-emerald flex items-center space-x-1 mt-1">
+                      <span>✓ Document attached:</span>
+                      <span className="truncate max-w-xs font-mono">{certificateForm.fileUrl.startsWith('data:') ? 'Base64 Encoded File' : certificateForm.fileUrl}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-accent-primary hover:opacity-90"
+                >
+                  <FiSave className="w-4 h-4" />
+                  <span>{editingCertificate ? 'Update Certificate' : 'Save Certificate'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('certificates')}
                   className="px-6 py-3 rounded-xl text-sm font-bold border border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-zinc-900"
                 >
                   Cancel
