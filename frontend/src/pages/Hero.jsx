@@ -20,7 +20,9 @@ const Hero = () => {
 
   // Typewriter effect
   useEffect(() => {
-    const roles = profile.roles.length > 0 ? profile.roles : ['Software Engineer', 'Backend Developer', 'Network Enthusiast'];
+    const roles = (profile && Array.isArray(profile.roles) && profile.roles.length > 0)
+      ? profile.roles
+      : ['Software Engineer', 'Backend Developer', 'Network Enthusiast'];
     const fullText = roles[currentRoleIndex];
     let timer;
 
@@ -49,7 +51,7 @@ const Hero = () => {
     const fetchProfile = async () => {
       try {
         const response = await api.get('/profile');
-        if (response.data) {
+        if (response.data && typeof response.data === 'object' && !Array.isArray(response.data) && Array.isArray(response.data.roles)) {
           setProfile(response.data);
         }
       } catch (err) {
