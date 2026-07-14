@@ -29,9 +29,10 @@ app.use(
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       const cleanOrigin = origin.replace(/\/$/, '');
+      console.log(`CORS Preflight - Origin: "${origin}" (Cleaned: "${cleanOrigin}"). Allowed:`, allowedOrigins);
       if (allowedOrigins.indexOf(cleanOrigin) === -1) {
-        const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-        return callback(new Error(msg), false);
+        console.warn(`CORS Rejected - "${cleanOrigin}" not found in allowed list:`, allowedOrigins);
+        return callback(null, false); // Reject gracefully rather than throwing 500 error
       }
       return callback(null, true);
     },
