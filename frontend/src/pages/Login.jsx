@@ -17,9 +17,7 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  // If user state updates (after login or from localStorage restore),
-  // navigate to admin. This only fires AFTER React has fully processed
-  // the setUser() call, so AdminDashboard will see the correct user.
+  // If already logged in (e.g. page refresh while session exists), redirect
   useEffect(() => {
     if (user) {
       navigate('/admin', { replace: true });
@@ -33,8 +31,10 @@ const Login = () => {
 
     if (result.success) {
       toast.success('Logged in successfully!');
-      // Do NOT navigate here. The useEffect above will handle navigation
-      // once React has fully processed the user state update.
+      // Use full page redirect to guarantee AuthProvider re-initializes
+      // from localStorage with the correct user already set.
+      // This eliminates all React state timing race conditions.
+      window.location.href = '/admin';
     } else {
       toast.error(result.message || 'Invalid email or password.');
     }
