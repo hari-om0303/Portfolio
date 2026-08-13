@@ -17,24 +17,14 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
-  // Get active user (state or validated localStorage fallback)
-  const activeUser = user || (() => {
-    try {
-      const storedUser = localStorage.getItem('adminUser');
-      if (storedUser && storedUser !== 'null' && storedUser !== 'undefined') {
-        const parsed = JSON.parse(storedUser);
-        if (parsed && typeof parsed === 'object' && parsed.token) return parsed;
-      }
-    } catch (e) {}
-    return null;
-  })();
-
-  // If already logged in, redirect to admin immediately
+  // If user state updates (after login or from localStorage restore),
+  // navigate to admin. This only fires AFTER React has fully processed
+  // the setUser() call, so AdminDashboard will see the correct user.
   useEffect(() => {
-    if (activeUser) {
-      navigate('/admin');
+    if (user) {
+      navigate('/admin', { replace: true });
     }
-  }, [activeUser, navigate]);
+  }, [user, navigate]);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -43,7 +33,8 @@ const Login = () => {
 
     if (result.success) {
       toast.success('Logged in successfully!');
-      navigate('/admin');
+      // Do NOT navigate here. The useEffect above will handle navigation
+      // once React has fully processed the user state update.
     } else {
       toast.error(result.message || 'Invalid email or password.');
     }
