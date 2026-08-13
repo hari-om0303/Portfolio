@@ -19,10 +19,18 @@ const Login = () => {
 
   // If already logged in (e.g. page refresh while session exists), redirect
   useEffect(() => {
-    if (user) {
-      navigate('/admin', { replace: true });
+    const storedUser = localStorage.getItem('adminUser');
+    if (storedUser) {
+      try {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && parsed.token) {
+          window.location.href = '/admin';
+        }
+      } catch (e) {
+        localStorage.removeItem('adminUser');
+      }
     }
-  }, [user, navigate]);
+  }, []);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -31,9 +39,8 @@ const Login = () => {
 
     if (result.success) {
       toast.success('Logged in successfully!');
-      // Use full page redirect to guarantee AuthProvider re-initializes
-      // from localStorage with the correct user already set.
-      // This eliminates all React state timing race conditions.
+      // Full page redirect: AuthProvider will re-initialize from localStorage
+      // on the fresh page load, guaranteeing user is set before AdminDashboard renders.
       window.location.href = '/admin';
     } else {
       toast.error(result.message || 'Invalid email or password.');
