@@ -79,8 +79,7 @@ const AdminDashboard = () => {
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    const storedUser = localStorage.getItem('adminUser');
-    if (!authLoading && !user && !storedUser) {
+    if (!authLoading && !user) {
       toast.error('Access denied. Please log in first.');
       navigate('/login');
     }

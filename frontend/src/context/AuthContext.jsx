@@ -15,19 +15,29 @@ export const AuthProvider = ({ children }) => {
   // Initialize auth state
   useEffect(() => {
     const checkAuth = () => {
-      const storedUser = localStorage.getItem('adminUser');
-      if (storedUser) {
-        try {
+      try {
+        const storedUser = localStorage.getItem('adminUser');
+        if (storedUser && storedUser !== 'null' && storedUser !== 'undefined') {
           const parsedUser = JSON.parse(storedUser);
-          setUser(parsedUser);
-          // Set authorization token header
-          api.defaults.headers.common['Authorization'] = `Bearer ${parsedUser.token}`;
-        } catch (e) {
-          console.error('Failed to parse adminUser from localStorage', e);
+          if (parsedUser && typeof parsedUser === 'object' && parsedUser.token) {
+            setUser(parsedUser);
+            // Set authorization token header
+            api.defaults.headers.common['Authorization'] = `Bearer ${parsedUser.token}`;
+          } else {
+            localStorage.removeItem('adminUser');
+            setUser(null);
+          }
+        } else {
           localStorage.removeItem('adminUser');
+          setUser(null);
         }
+      } catch (e) {
+        console.error('Failed to parse adminUser from localStorage', e);
+        localStorage.removeItem('adminUser');
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkAuth();
