@@ -17,12 +17,24 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
+  // Get active user (state or validated localStorage fallback)
+  const activeUser = user || (() => {
+    try {
+      const storedUser = localStorage.getItem('adminUser');
+      if (storedUser && storedUser !== 'null' && storedUser !== 'undefined') {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && typeof parsed === 'object' && parsed.token) return parsed;
+      }
+    } catch (e) {}
+    return null;
+  })();
+
   // If already logged in, redirect to admin immediately
   useEffect(() => {
-    if (user) {
+    if (activeUser) {
       navigate('/admin');
     }
-  }, [user, navigate]);
+  }, [activeUser, navigate]);
 
   const onSubmit = async (data) => {
     setLoading(true);

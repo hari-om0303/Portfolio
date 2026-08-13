@@ -77,20 +77,32 @@ const AdminDashboard = () => {
     yearsOfExperience: '',
   });
 
+  // Get active user (state or validated localStorage fallback)
+  const activeUser = user || (() => {
+    try {
+      const storedUser = localStorage.getItem('adminUser');
+      if (storedUser && storedUser !== 'null' && storedUser !== 'undefined') {
+        const parsed = JSON.parse(storedUser);
+        if (parsed && typeof parsed === 'object' && parsed.token) return parsed;
+      }
+    } catch (e) {}
+    return null;
+  })();
+
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!authLoading && !activeUser) {
       toast.error('Access denied. Please log in first.');
       navigate('/login');
     }
-  }, [user, authLoading, navigate]);
+  }, [activeUser, authLoading, navigate]);
 
   // Fetch initial collections
   useEffect(() => {
-    if (user) {
+    if (activeUser) {
       fetchCMSData();
     }
-  }, [user]);
+  }, [activeUser]);
 
   const fetchCMSData = async () => {
     setLoading(true);
@@ -402,7 +414,7 @@ const AdminDashboard = () => {
     }
   };
 
-  if (authLoading || !user) {
+  if (authLoading || !activeUser) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-24 font-mono text-sm">
         Verifying administrator session...
